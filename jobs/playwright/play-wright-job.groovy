@@ -1,4 +1,4 @@
-job('play-wright-job') {
+job('play_wright_job') {
   scm {
     git {
       remote {
