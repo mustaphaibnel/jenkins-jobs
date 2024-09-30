@@ -1,9 +1,9 @@
-pipelineJob('pull_deploy_user_service') {
-    description('Pull and Deploy Job for User Service with Environment Support')
+pipelineJob('pull_deploy_service') {
+    description('Pull and Deploy Job for Services with Environment Support')
 
     parameters {
         stringParam('ENVIRONMENT', 'staging', 'Environment name (e.g., staging, production)')
-        stringParam('SERVICE_NAME', 'user-service', 'Service name (e.g., user-service, building-service)')
+        choiceParam('SERVICE_NAME', ['user-service', 'content-service', 'communication-service', 'assistance-service', 'building-service'], 'Select the service to deploy')
         stringParam('REPO_URL', 'https://github.com/viven-app/EnvFlex-Deploy.git', 'GitHub Repository URL')
         stringParam('BRANCH', 'staging', 'Git Branch')
         stringParam('AWS_ACCOUNT_ID', '041108090159', 'AWS Account ID')

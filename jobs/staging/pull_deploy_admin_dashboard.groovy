@@ -1,5 +1,5 @@
 pipelineJob('pull_deploy_admin_dashboard_service') {
-    description('Pull and Deploy Job for Admin Dashboard Service with Environment Support')
+    description('Pull and Deploy Job for Admin Dashboard Service with Vite Configuration Support')
 
     parameters {
         stringParam('ENVIRONMENT', 'staging', 'Environment name (e.g., staging, production)')
@@ -11,6 +11,8 @@ pipelineJob('pull_deploy_admin_dashboard_service') {
         stringParam('DOCKER_TAG', 'staging', 'Docker Tag to Use for the Image')
         stringParam('GITHUB_CREDENTIALS', 'staging-github-token', 'GitHub Credentials ID')
         stringParam('AWS_CREDENTIALS', 'staging-aws-credentials', 'AWS Credentials ID')
+        stringParam('VITE_BACKEND_URI', 'http://backend-service', 'Backend API URI for Vite')
+        stringParam('VITE_BACKEND_PORT', '4000', 'Backend API Port for Vite')
         booleanParam('REMOVE_DB_VOLUME', false, 'Remove database volume before deployment if true')
     }
 
@@ -29,10 +31,13 @@ pipeline {
         AWS_CREDENTIALS = "\${params.AWS_CREDENTIALS}"
         SERVICE_NAME = "\${params.SERVICE_NAME}"
 
+        // Vite-based configuration
+        VITE_BACKEND_URI = "\${params.VITE_BACKEND_URI}"
+        VITE_BACKEND_PORT = "\${params.VITE_BACKEND_PORT}"
+
         // Admin Dashboard service configuration
         PORT = 3000
         NODE_ENV = "production"
-        API_GATEWAY_URL = "http://gateway-core:4000/graphql"
         ACCESS_TOKEN_SECRET = "ADMIN_ACCESS_TOKEN_SECRET"
         REFRESH_TOKEN_SECRET = "ADMIN_REFRESH_TOKEN_SECRET"
     }
@@ -89,16 +94,18 @@ pipeline {
                 script {
                     sh '''
                     #!/bin/bash
-                    # Running the admin dashboard service container with environment variables
+                    # Running the admin dashboard service container with Vite environment variables
+                    # Binding host port 3000 to container port 80 (Dockerfile exposes 80)
                     docker run -d \
                         --name \${SERVICE_NAME} \
                         --network app-network \
+                        -e VITE_BACKEND_URI=\${VITE_BACKEND_URI} \
+                        -e VITE_BACKEND_PORT=\${VITE_BACKEND_PORT} \
                         -e PORT=\${PORT} \
                         -e NODE_ENV=\${NODE_ENV} \
-                        -e API_GATEWAY_URL=\${API_GATEWAY_URL} \
                         -e ACCESS_TOKEN_SECRET=\${ACCESS_TOKEN_SECRET} \
                         -e REFRESH_TOKEN_SECRET=\${REFRESH_TOKEN_SECRET} \
-                        -p \${PORT}:\${PORT} \
+                        -p \${PORT}:80 \
                         \${ECR_URI}:\${DOCKER_TAG}
                     '''
                 }

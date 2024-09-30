@@ -57,7 +57,7 @@ pipeline {
                 withAWS(credentials: "\${AWS_CREDENTIALS}", region: "\${AWS_REGION}") {
                     sh '''
                     #!/bin/bash
-                    aws ecr get-login-password --region \$AWS_REGION | docker login --username AWS --password-stdin \$AWS_ACCOUNT_ID.dkr.ecr.\$AWS_REGION.amazonaws.com
+                    aws ecr get-login-password --region \${AWS_REGION} | docker login --username AWS --password-stdin \${AWS_ACCOUNT_ID}.dkr.ecr.\${AWS_REGION}.amazonaws.com
                     '''
                 }
             }
@@ -68,7 +68,6 @@ pipeline {
                 script {
                     sh '''
                     #!/bin/bash
-                    # Check if the Docker network exists
                     if ! docker network ls | grep -q 'app-network'; then
                         echo "Creating Docker network 'app-network'..."
                         docker network create app-network
@@ -80,19 +79,17 @@ pipeline {
             }
         }
 
-
-
         stage('Remove Existing Database and Volume') {
             steps {
                 script {
                     sh '''
                     #!/bin/bash
-                    DB_CONTAINER_NAME="\$SEQUELIZE_HOST"
+                    DB_CONTAINER_NAME="\${SEQUELIZE_HOST}"
 
-                    if [ "$(docker ps -aq -f name=\$DB_CONTAINER_NAME)" ]; then
-                        docker stop \$DB_CONTAINER_NAME || true
-                        docker rm \$DB_CONTAINER_NAME || true
-                        if [ "\$REMOVE_DB_VOLUME" == "true" ]; then
+                    if [ "\$(docker ps -aq -f name=\${DB_CONTAINER_NAME})" ]; then
+                        docker stop \${DB_CONTAINER_NAME} || true
+                        docker rm \${DB_CONTAINER_NAME} || true
+                        if [ "\${REMOVE_DB_VOLUME}" == "true" ]; then
                             docker volume rm \${DB_CONTAINER_NAME}-volume || true
                         fi
                     fi
@@ -101,13 +98,11 @@ pipeline {
             }
         }
 
-
         stage('Deploy Database') {
             steps {
                 script {
                     sh '''
                     #!/bin/bash
-                    # Running the database container using the specified SEQUELIZE_HOST
                     docker run -d \
                         --name \${SEQUELIZE_HOST} \
                         --network app-network \
@@ -121,7 +116,6 @@ pipeline {
                 }
             }
         }
-
 
         stage('Remove Existing Service Container') {
             steps {
@@ -142,7 +136,6 @@ pipeline {
                 script {
                     sh '''
                     #!/bin/bash
-                    # Running the service container using environment variables passed directly
                     docker run -d \
                         --name \${SERVICE_NAME} \
                         --network app-network \
