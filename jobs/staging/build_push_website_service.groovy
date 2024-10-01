@@ -1,4 +1,4 @@
-pipelineJob('build_push_Landing_page') {
+pipelineJob('build_push_website_service') {
     description('Build and Push Job for Landing-page with configurable parameters for AWS credentials, GitHub credentials, Docker tag, and AWS account.')
     parameters {
         stringParam('REPO_URL', 'https://github.com/viven-app/Landing-page.git', 'GitHub Repository URL')
