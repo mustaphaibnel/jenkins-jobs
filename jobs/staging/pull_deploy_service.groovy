@@ -4,7 +4,7 @@ pipelineJob('pull_deploy_service') {
     parameters {
         stringParam('ENVIRONMENT', 'staging', 'Environment name (e.g., staging, production)')
         choiceParam('SERVICE_NAME', ['user-service', 'content-service', 'communication-service', 'assistance-service', 'building-service'], 'Select the service to deploy')
-        stringParam('REPO_URL', 'https://github.com/viven-app/EnvFlex-Deploy.git', 'GitHub Repository URL')
+        stringParam('REPO_URL', 'https://github.com/onlysportsfan/EnvFlex-Deploy.git', 'GitHub Repository URL')
         stringParam('BRANCH', 'staging', 'Git Branch')
         stringParam('AWS_ACCOUNT_ID', '041108090159', 'AWS Account ID')
         stringParam('ECR_REGION', 'us-east-1', 'AWS Region')

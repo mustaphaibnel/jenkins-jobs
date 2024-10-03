@@ -2,7 +2,7 @@ pipelineJob('build_push_service') {
     description('Build and Push Job for Services with configurable parameters for AWS credentials, GitHub credentials, Docker tag, and AWS account.')
 
     parameters {
-        choiceParam('SERVICE_NAME', ['user-service', 'content-service', 'communication-service', 'assistance-service', 'building-service'], 'Select the service to build and push')
+        choiceParam('SERVICE_NAME', ['user-service', 'content-service', 'auth-service', 'notification-service'], 'Select the service to build and push')
         stringParam('BRANCH', '', 'Git Branch for the selected service (leave blank to use default)')
         stringParam('ECR_REGION', 'us-east-1', 'AWS Region for ECR')
         stringParam('ENVIRONMENT', 'staging', 'Environment (e.g., staging, production)')
@@ -33,24 +33,20 @@ pipeline {
                 script {
                     def serviceConfigs = [
                         'user-service': [
-                            repoUrl: 'https://github.com/viven-app/user-service.git',
-                            defaultBranch: 'DEVOPS-1'
+                            repoUrl: 'https://github.com/onlysportsfan/user-service.git',
+                            defaultBranch: 'alpha'
                         ],
                         'content-service': [
-                            repoUrl: 'https://github.com/viven-app/content-service.git',
-                            defaultBranch: 'DEVOPS-1'
+                            repoUrl: 'https://github.com/onlysportsfan/content-service.git',
+                            defaultBranch: 'alpha'
                         ],
-                        'communication-service': [
-                            repoUrl: 'https://github.com/viven-app/communication-service.git',
-                            defaultBranch: 'DEVOPS-1'
+                        'auth-service': [
+                            repoUrl: 'https://github.com/onlysportsfan/auth-service.git',
+                            defaultBranch: 'alpha'
                         ],
-                        'assistance-service': [
-                            repoUrl: 'https://github.com/viven-app/assistance-service.git',
-                            defaultBranch: 'DEVOPS-1'
-                        ],
-                        'building-service': [
-                            repoUrl: 'https://github.com/viven-app/building-service.git',
-                            defaultBranch: 'DEVOPS-1'
+                        'notification-service': [
+                            repoUrl: 'https://github.com/onlysportsfan/notification-service.git',
+                            defaultBranch: 'alpha'
                         ]
                     ]
                     def config = serviceConfigs[params.SERVICE_NAME]
